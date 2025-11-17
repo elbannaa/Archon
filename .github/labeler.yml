@@ -1,0 +1,62 @@
+# Auto-label PRs based on changed files
+
+frontend:
+  - changed-files:
+    - any-glob-to-any-file: 'archon-ui-main/**/*'
+
+backend:
+  - changed-files:
+    - any-glob-to-any-file: 'python/**/*'
+
+mcp:
+  - changed-files:
+    - any-glob-to-any-file: 'python/src/mcp_server/**/*'
+
+agents:
+  - changed-files:
+    - any-glob-to-any-file: 'python/src/agents/**/*'
+
+database:
+  - changed-files:
+    - any-glob-to-any-file: 'migration/**/*'
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: 
+      - '**/*.md'
+      - 'PRPs/**/*'
+      - 'docs/**/*'
+
+ci-cd:
+  - changed-files:
+    - any-glob-to-any-file: 
+      - '.github/workflows/**/*'
+      - '.github/actions/**/*'
+
+docker:
+  - changed-files:
+    - any-glob-to-any-file: 
+      - '**/Dockerfile*'
+      - '**/docker-compose*.yml'
+      - '.dockerignore'
+
+tests:
+  - changed-files:
+    - any-glob-to-any-file: 
+      - '**/tests/**/*'
+      - '**/*.test.*'
+      - '**/*.spec.*'
+
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file: 
+      - '**/package*.json'
+      - '**/pyproject.toml'
+      - '**/requirements*.txt'
+      - '**/uv.lock'
+
+breaking-change:
+  - changed-files:
+    - any-glob-to-any-file: 
+      - 'migration/**/*'
+      - '**/schema*.sql'

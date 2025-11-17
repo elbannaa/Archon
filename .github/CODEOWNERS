@@ -1,0 +1,36 @@
+# Code Owners for Archon V2 Beta
+# These users will be automatically requested for review when someone opens a PR
+
+# Default owners for everything in the repo
+* @coleam00 @Wirasm
+
+# Frontend (React/TypeScript)
+/archon-ui-main/ @coleam00 @Wirasm
+/archon-ui-main/src/components/ @coleam00 @Wirasm
+/archon-ui-main/src/pages/ @coleam00 @Wirasm
+
+# Backend (Python/FastAPI)
+/python/ @coleam00 @Wirasm
+/python/src/server/ @coleam00 @Wirasm
+/python/src/mcp_server/ @coleam00 @Wirasm
+/python/src/agents/ @coleam00 @Wirasm
+
+# Database & Migrations
+/migration/ @coleam00 @Wirasm
+
+# CI/CD & Infrastructure
+/.github/workflows/ @coleam00 @Wirasm
+/docker-compose.yml @coleam00 @Wirasm
+/python/Dockerfile.* @coleam00 @Wirasm
+/archon-ui-main/Dockerfile @coleam00 @Wirasm
+
+# Documentation
+/PRPs/ @coleam00 @Wirasm
+/docs/ @coleam00 @Wirasm
+*.md @coleam00 @Wirasm
+/CLAUDE.md @coleam00 @Wirasm
+/CONTRIBUTING.md @coleam00 @Wirasm
+
+# Tests
+/python/tests/ @coleam00 @Wirasm
+/archon-ui-main/tests/ @coleam00 @Wirasm

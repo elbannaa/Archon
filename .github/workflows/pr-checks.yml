@@ -1,0 +1,213 @@
+name: PR Quality Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  pr-validation:
+    name: Validate PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check PR title format
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Types from conventional commits
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+          # Require scope in commit message (e.g., feat(backend): add new feature)
+          requireScope: false
+          # Allow custom scopes
+          scopes: |
+            frontend
+            backend
+            mcp
+            agents
+            database
+            docker
+            ci-cd
+            docs
+          # Validate subject case
+          subjectPattern: ^[A-Z].+$
+          subjectPatternError: |
+            The subject "{subject}" found in the pull request title "{title}"
+            must start with an uppercase character.
+
+      - name: Check PR description
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            
+            // Check if PR description is too short
+            if (body.length < 50) {
+              core.setFailed('PR description is too short. Please provide more details about your changes.');
+              return;
+            }
+            
+            // Check if required sections are filled
+            const requiredSections = ['Summary', 'Changes Made', 'Type of Change', 'Testing'];
+            const missingSections = [];
+            
+            for (const section of requiredSections) {
+              const regex = new RegExp(`## ${section}[\\s\\S]*?(?=##|$)`, 'i');
+              const match = body.match(regex);
+              
+              if (!match || match[0].trim().split('\n').length < 3) {
+                missingSections.push(section);
+              }
+            }
+            
+            if (missingSections.length > 0) {
+              const comment = `⚠️ **PR Description Incomplete**
+              
+              Please fill out the following sections in your PR description:
+              ${missingSections.map(s => `- ${s}`).join('\n')}
+              
+              A complete description helps reviewers understand your changes better!`;
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: comment
+              });
+            }
+
+      - name: Check for breaking changes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            const title = pr.title || '';
+            
+            // Check if this PR has breaking changes
+            const hasBreakingInTitle = title.includes('!') || title.toLowerCase().includes('breaking');
+            const hasBreakingInBody = body.toLowerCase().includes('breaking change');
+            
+            if (hasBreakingInTitle || hasBreakingInBody) {
+              // Add breaking-change label
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: ['breaking-change']
+              });
+              
+              // Check if breaking changes section is filled
+              const breakingSection = body.match(/## Breaking Changes[\\s\\S]*?(?=##|$)/i);
+              if (!breakingSection || breakingSection[0].trim().split('\n').length < 3) {
+                const comment = `⚠️ **Breaking Changes Detected**
+                
+                This PR appears to introduce breaking changes. Please:
+                1. Fill out the "Breaking Changes" section in the PR description
+                2. Describe what breaks and why
+                3. Provide migration steps for users
+                
+                This helps users understand how to adapt to the changes!`;
+                
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body: comment
+                });
+              }
+            }
+
+      - name: Check for test evidence
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            
+            // Check if Testing section has code blocks (evidence)
+            const testingSection = body.match(/## Testing[\\s\\S]*?(?=##|$)/i);
+            
+            if (testingSection) {
+              const hasCodeBlock = testingSection[0].includes('```');
+              const hasCheckedTests = testingSection[0].match(/- \[x\]/i);
+              
+              if (!hasCodeBlock && !hasCheckedTests) {
+                const comment = `💡 **Testing Evidence Needed**
+                
+                Please provide evidence that your changes work:
+                - Check the testing checkboxes that apply
+                - Add command outputs showing tests pass
+                - Include screenshots for UI changes
+                
+                This helps reviewers verify your changes!`;
+                
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body: comment
+                });
+              }
+            }
+
+  check-merge-conflicts:
+    name: Check for Merge Conflicts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for merge conflicts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            
+            // Check if PR is mergeable
+            if (pr.mergeable === false) {
+              const comment = `⚠️ **Merge Conflicts Detected**
+              
+              This PR has merge conflicts with the base branch. Please resolve them:
+              
+              \`\`\`bash
+              # Update your branch with latest main
+              git fetch origin
+              git merge origin/main
+              # Or rebase
+              git rebase origin/main
+              \`\`\`
+              
+              Then push the changes to update this PR.`;
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: comment
+              });
+              
+              // Add label
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: ['merge-conflict']
+              });
+            }

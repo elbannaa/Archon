@@ -1,0 +1,29 @@
+# Auto-assign configuration
+# Automatically assigns reviewers based on CODEOWNERS and other rules
+
+# Reviewers to assign (will use CODEOWNERS by default)
+addReviewers: true
+addAssignees: false
+
+# Number of reviewers to add to the pull request
+# Set to 0 to add all the reviewers (default: 0)
+numberOfReviewers: 0
+
+# Reviewers for specific files (in addition to CODEOWNERS)
+reviewers:
+  # Default reviewers if no CODEOWNERS match
+  - coleam00
+  - Wirasm
+
+# Skip keywords for draft PRs or WIP
+skipKeywords:
+  - wip
+  - draft
+  - "[skip-review]"
+
+# Use CODEOWNERS file for reviewer assignment
+useReviewGroups: false
+useAssigneeGroups: false
+
+# Run only when PR is ready for review (not draft)
+runOnDraft: false

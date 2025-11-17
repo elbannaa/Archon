@@ -1,0 +1,17 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/coleam00/Archon/discussions
+    about: Ask questions, share ideas, or discuss features with the community
+  
+  - name: 📚 Documentation
+    url: https://github.com/coleam00/Archon/tree/main/PRPs
+    about: Browse the project documentation and guides
+  
+  - name: 🐛 Known Issues
+    url: https://github.com/coleam00/Archon/issues?q=is%3Aissue+is%3Aopen+label%3Abug
+    about: Check if your issue has already been reported
+  
+  - name: 💡 Feature Requests
+    url: https://github.com/coleam00/Archon/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement
+    about: See what features are being requested or suggest your own

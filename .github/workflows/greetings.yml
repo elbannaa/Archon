@@ -1,0 +1,58 @@
+name: Greet New Contributors
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: |
+            👋 **Welcome to Archon V2 Beta!**
+            
+            Thank you for creating your first issue! We appreciate your contribution to making Archon better.
+            
+            A maintainer will review your issue soon. In the meantime:
+            - Make sure you've provided all relevant information
+            - Check if your issue is similar to existing ones
+            - Feel free to join our discussions
+            
+            📚 Helpful resources:
+            - [Contributing Guide](https://github.com/${{ github.repository }}/blob/main/CONTRIBUTING.md)
+            - [Development Setup](https://github.com/${{ github.repository }}/blob/main/CLAUDE.md)
+            - [Project Documentation](https://github.com/${{ github.repository }}/tree/main/PRPs)
+            
+            Happy coding! 🚀
+            
+          pr-message: |
+            🎉 **Welcome to Archon V2 Beta!**
+            
+            Thank you for creating your first pull request! We're excited to review your contribution.
+            
+            Before your PR can be merged, please ensure:
+            - [ ] All CI checks pass
+            - [ ] PR description is complete (following the template)
+            - [ ] Tests are added for new features
+            - [ ] Code follows project conventions
+            
+            A maintainer will review your PR soon. Feel free to:
+            - Ask questions in the comments
+            - Request help with failing tests
+            - Tag `@coleam00` or `@Wirasm` for urgent reviews
+            
+            📚 Helpful resources:
+            - [Contributing Guide](https://github.com/${{ github.repository }}/blob/main/CONTRIBUTING.md)
+            - [Development Workflow](https://github.com/${{ github.repository }}/blob/main/CLAUDE.md)
+            - [Claude Code Review](https://github.com/${{ github.repository }}/blob/main/archon/.github/workflows/claude-review.yml) - Use `@claude-review` to get AI code review
+            
+            Thank you for contributing to Archon! 🙏
